@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>AgroTech Monitoramento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f1f8e9;
+      margin: 0;
+      padding: 30px;
+      color: #33691e;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .coluna-esquerda {
+      max-width: 400px;
+      flex: 1;
+    }
+
+    .coluna-direita {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      flex: 2;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 40px;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #558b2f;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 20px;
+    }
+
+    .legenda {
+      background-color: #ffffff;
+      border-left: 5px solid #8bc34a;
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+      border-radius: 6px;
+    }
+
+    .legenda h3 {
+      color: #558b2f;
+      margin: 0 0 6px 0;
+    }
+
+    .legenda ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .legenda li {
+      padding: 3px 0;
+      font-size: 14px;
+    }
+
+    .datetime {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌾 AgroTech Monitoramento Ambiental</h1>
+
+  <div class="container">
+    <!-- Coluna Esquerda: Legendas -->
+    <div class="coluna-esquerda">
+      <div class="legenda">
+        <h3><img src="img/soil_24.png" alt="Solo"> Umidade do Solo</h3>
+        <ul>
+          <li><strong>000 – 300:</strong> Muito molhado</li>
+          <li><strong>301 – 600:</strong> Úmido (ideal)</li>
+          <li><strong>601 – 800:</strong> Secando</li>
+          <li><strong>801 – 1023:</strong> Seco (precisa regar)</li>
+        </ul>
+      </div>
+      <div class="legenda">
+        <h3><img src="img/tds_24.png" alt="TDS"> TDS (Total de Substâncias Dissolvidas)</h3>
+        <ul>
+          <li><strong>000 - 050:</strong> Água altamente purificada</li>
+          <li><strong>050 - 150:</strong> Água muito limpa</li>
+          <li><strong>150 - 300:</strong> Água potável</li>
+          <li><strong>300 - 500:</strong> Água com muitos sais</li>
+          <li><strong>500 - 1000:</strong> Não recomendada</li>
+          <li><strong>1000+:</strong> Imprópria para consumo</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Coluna Direita: Cards -->
+    <div class="coluna-direita" id="dados-container">
+      <!-- Dados inseridos dinamicamente -->
+    </div>
+  </div>
+
+  <div class="datetime" id="dataHora">Última leitura: --</div>
+
+  <script>
+    async function carregarDados() {
+      try {
+        const resposta = await fetch('/dados');
+        const dados = await resposta.json();
+        const container = document.getElementById('dados-container');
+        const dataHora = document.getElementById('dataHora');
+        container.innerHTML = "";
+
+        if (dados.length > 0) {
+          const item = dados[0];
+          dataHora.innerText = `Última leitura: ${item[5]}`;
+          container.innerHTML = `
+            <div class="card">
+              <img src="img/temperature.png" alt="Temperatura">
+              <div class="label">Temperatura</div>
+              <div class="value">${item[1]} °C</div>
+            </div>
+            <div class="card">
+              <img src="img/humidity.png" alt="Umidade Ar">
+              <div class="label">Umidade do Ar</div>
+              <div class="value">${item[2]} %</div>
+            </div>
+            <div class="card">
+              <img src="img/soil.png" alt="Umidade Solo">
+              <div class="label">Umidade do Solo</div>
+              <div class="value">${item[3]}</div>
+            </div>
+            <div class="card">
+              <img src="img/tds.png" alt="TDS">
+              <div class="label">TDS (ppm)</div>
+              <div class="value">${item[4]}</div>
+            </div>`;
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
+    }
+
+    carregarDados();
+    setInterval(carregarDados, 3000);
+  </script>
+
+</body>
+</html>

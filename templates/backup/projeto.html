@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitoramento Agro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3fbe6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #33691e;
+    }
+
+    .tabela-container {
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid #a5d6a7;
+      border-radius: 6px;
+    }
+
+    table {
+      border-collapse: collapse;
+      background-color: #ffffff;
+      width: 100%;
+      min-width: 600px;
+    }
+
+    th, td {
+      border: 1px solid #a5d6a7;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #8bc34a;
+      color: white;
+    }
+
+    th img {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    .legenda {
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      padding: 12px;
+      width: 400px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    .legenda h3 {
+      margin-top: 0;
+      color: #2e7d32;
+    }
+
+    .legenda ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .legenda li {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Monitoramento de Solo e Ambiente</h1>
+
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th><img src="img/calendar.png" alt="Data"> Data / Hora </th>
+          <th><img src="img/temperature.png" alt="Temperatura"> Temperatura </th>
+          <th><img src="img/humidity.png" alt="Umidade"> Umidade Ar </th>
+          <th><img src="img/soil.png" alt="Solo"> Umidade Solo </th>
+          <th><img src="img/tds.png" alt="TDS"> TDS (ppm) </th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+  </div>
+
+  <div class="legenda">
+    <h3><img src="img/soil_24.png" alt="Solo"> - Informação: Nível de Umidade do Solo</h3>
+    <ul>
+      <li><strong>000 – 300:</strong> Muito molhado</li>
+      <li><strong>301 – 600:</strong> Úmido (ideal)</li>
+      <li><strong>601 – 800:</strong> Secando</li>
+      <li><strong>801 – 1023:</strong> Seco (precisa regar)</li>
+    </ul>
+  </div>
+
+  <div class="legenda">
+    <h3><img src="img/tds_24.png" alt="TDS"> - Informação: Total de Substâncias Dissolvidas (ppm)</h3>
+    <ul>
+      <li><strong>000 - 050:</strong> Água altamente purificada (ex: água destilada)</li>
+      <li><strong>050 - 150:</strong> Água muito limpa, ideal para aquários e hidroponia</li>
+      <li><strong>150 - 300:</strong> Água potável, segura para consumo</li>
+      <li><strong>300 - 500:</strong> Água com níveis mais altos de sais e minerais</li>
+      <li><strong>500 - 1000:</strong> Presença de poluentes, não recomendado</li>
+      <li><strong>1000+:</strong> Imprópria para consumo, geralmente salobra ou poluída</li>
+    </ul>
+  </div>
+
+  <script>
+    let intervaloAtualizacao = null;
+
+    async function carregarDados() {
+      const resposta = await fetch('/dados');
+      const dados = await resposta.json();
+      const corpo = document.getElementById('tabela');
+      corpo.innerHTML = "";
+      dados.slice(0, 15).forEach(item => {
+        corpo.innerHTML += `<tr>
+          <td>${item[5]}</td>
+          <td>${item[1]}</td>
+          <td>${item[2]}</td>
+          <td>${item[3]}</td>
+          <td>${item[4]}</td>
+        </tr>`;
+      });
+    }
+
+    function iniciarAtualizacao() {
+      if (!intervaloAtualizacao) {
+        carregarDados(); // Carrega imediatamente
+        intervaloAtualizacao = setInterval(carregarDados, 3000);
+      }
+    }
+
+    function pararAtualizacao() {
+      clearInterval(intervaloAtualizacao);
+      intervaloAtualizacao = null;
+    }
+
+    setInterval(carregarDados, 3000);
+    carregarDados(); // Carrega na primeira vez
+  </script>
+</body>
+</html>

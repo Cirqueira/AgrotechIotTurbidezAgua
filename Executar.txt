@@ -1,0 +1,3 @@
+01. Verificar a COM no Gerenciador de Dispositivos
+02. Editar o arquivo app.py >> Informe a COM >> Informe o arquivo hmtl (Index.html) >> executar.
+03. Abrir browser >> http://localhost:5000/ (Enter)
