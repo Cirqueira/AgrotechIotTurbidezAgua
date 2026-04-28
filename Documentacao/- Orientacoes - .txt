@@ -1,0 +1,11 @@
+Importante: Verifique a COM, pois será necessário atualizar no arquivo app.py
+
+* Melhorar exibicao do ArduinoIDE (display).
+
+* Executar o projeto:
+- Abrir PowerShell em: C:Projeto\AgrotechIotTurbidezAgua>
+- Executar: python app.py
+Dentro deste arquivo existe uma rota para executar o arquivo .html
+
+- Abrir browser: localhost:5000
+Irá exibir os dados do projeto em HTML. 
